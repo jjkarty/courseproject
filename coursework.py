@@ -1,7 +1,9 @@
+from google.colab import files
+uploaded = files.upload()
+
+
 import pandas as pd
-
 df = pd.read_csv('oprosdata.csv')
-
 
 df.head()
 
@@ -121,35 +123,17 @@ criteria_by_age_percent = criteria_by_age.div(total_by_age, axis=0).mul(100).rou
 criteria_by_sector = df.groupby('Сфера')[criteria_columns].apply(lambda x: x.notna().sum())
 criteria_by_sector_percent = criteria_by_sector.div(total_by_sector, axis=0).mul(100).round(2)
 
+# Save everything into one Excel file
 
 
 excel_path = "opros_full_results.xlsx"
 
-with pd.ExcelWriter(excel_path, engine='openpyxl') as writer:
-    age_dist.to_frame(name='Возраст (%)') \
-        .to_excel(writer, sheet_name='Возраст', index=True)
-
-    sector_dist.to_frame(name='Сфера (%)') \
-        .to_excel(writer, sheet_name='Сфера', index=True)
-
-    contact_by_age_percent.to_excel(
-        writer, sheet_name='Каналы_по_возрасту', index=True
-    )
-    contact_by_sector_percent.to_excel(
-        writer, sheet_name='Каналы_по_сфере', index=True
-    )
-
-    strategy_by_age_percent.to_excel(
-        writer, sheet_name='Стратегии_по_возрасту', index=True
-    )
-    strategy_by_sector_percent.to_excel(
-        writer, sheet_name='Стратегии_по_сфере', index=True
-    )
-
-    criteria_by_age_percent.to_excel(
-        writer, sheet_name='Критерии_по_возрасту', index=True
-    )
-    criteria_by_sector_percent.to_excel(
-        writer, sheet_name='Критерии_по_сфере', index=True
-    )
+with pd.ExcelWriter(excel_path) as writer:
+    contact_by_age_percent.to_excel(writer, sheet_name='Каналы_по_возрасту')
+    contact_by_sector_percent.to_excel(writer, sheet_name='Каналы_по_сфере')
+    strategy_by_age_percent.to_excel(writer, sheet_name='Стратегии_по_возрасту')
+    strategy_by_sector_percent.to_excel(writer, sheet_name='Стратегии_по_сфере')
+    criteria_by_age_percent.to_excel(writer, sheet_name='Критерии_по_возрасту')
+    criteria_by_sector_percent.to_excel(writer, sheet_name='Критерии_по_сфере')
+from google.colab import files
 files.download('opros_full_results.xlsx')
