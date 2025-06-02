@@ -137,3 +137,38 @@ with pd.ExcelWriter(excel_path) as writer:
     criteria_by_sector_percent.to_excel(writer, sheet_name='Критерии_по_сфере')
 from google.colab import files
 files.download('opros_full_results.xlsx')
+
+
+import matplotlib.pyplot as plt
+
+
+# Classify into four categories
+def classify_activity(it, fin):
+    if it == 'Да' and fin == 'Да':
+        return 'IT and Finance'
+    elif it == 'Да' and fin != 'Да':
+        return 'IT only'
+    elif it != 'Да' and fin == 'Да':
+        return 'Finance only'
+    else:
+        return 'Neither IT nor Finance'
+
+df['Activity'] = df.apply(
+    lambda row: classify_activity(row['Информационные технологии:'], row['Финансы:']), axis=1
+)
+
+# Pie chart for age distribution
+age_counts = df['Ваш возраст:'].value_counts()
+plt.figure(figsize=(6, 6))
+plt.pie(age_counts, labels=age_counts.index, autopct='%1.1f%%', startangle=90)
+plt.title('Age Distribution of Respondents')
+plt.axis('equal')
+plt.show()
+
+# Pie chart for activity categories
+activity_counts = df['Activity'].value_counts()
+plt.figure(figsize=(6, 6))
+plt.pie(activity_counts, labels=activity_counts.index, autopct='%1.1f%%', startangle=90)
+plt.title('Current Activity of Respondents')
+plt.axis('equal')
+plt.show()
